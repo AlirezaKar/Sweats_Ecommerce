@@ -1,0 +1,45 @@
+import { encodeSlug } from "@/lib/constants/config";
+
+export const endpoints = {
+  categories: "/api/categories/",
+  products: "/api/products/",
+  product: (slug: string) => `/api/products/${encodeSlug(slug)}/`,
+  productRelated: (slug: string) => `/api/products/${encodeSlug(slug)}/related/`,
+  blog: "/api/blog/",
+  blogPost: (slug: string) => `/api/blog/${encodeSlug(slug)}/`,
+  blogComments: (slug: string) => `/api/blog/${encodeSlug(slug)}/comments/`,
+  productComments: (slug: string) => `/api/products/${encodeSlug(slug)}/comments/`,
+  tutorials: "/api/tutorials/",
+  tutorial: (slug: string) => `/api/tutorials/${encodeSlug(slug)}/`,
+  courses: "/api/courses/",
+  course: (slug: string) => `/api/courses/${encodeSlug(slug)}/`,
+  courseEnroll: (slug: string) => `/api/courses/${encodeSlug(slug)}/enroll/`,
+  courseFiles: (slug: string) => `/api/courses/${encodeSlug(slug)}/files/`,
+  courseReview: (slug: string) => `/api/courses/${encodeSlug(slug)}/reviews/`,
+  courseMyReview: (slug: string) => `/api/courses/${encodeSlug(slug)}/reviews/mine/`,
+  authLogin: "/api/auth/login/",
+  authRegister: "/api/auth/register/",
+  authLogout: "/api/auth/logout/",
+  authMe: "/api/auth/me/",
+  wallet: "/api/wallet/",
+  walletTransactions: "/api/wallet/transactions/",
+  walletTopUp: "/api/wallet/top-up/",
+  walletPayOrder: (orderId: number) => `/api/wallet/pay-order/${orderId}/`,
+  cart: "/api/cart/",
+  cartItems: "/api/cart/items/",
+  cartItem: (itemId: number) => `/api/cart/items/${itemId}/`,
+  cartItemRemove: (itemId: number) => `/api/cart/items/${itemId}/remove/`,
+  cartMerge: "/api/cart/merge/",
+  checkout: "/api/checkout/",
+  orders: "/api/orders/",
+  order: (id: number) => `/api/orders/${id}/`,
+  addresses: "/api/addresses/",
+  address: (id: number) => `/api/addresses/${id}/`,
+  adminBackups: "/api/admin/backups/",
+} as const;
+
+/** Avoid caching stale 404/empty responses for slug-based detail routes */
+export const detailFetchOptions = {
+  revalidate: false as const,
+  cache: "no-store" as const,
+};

@@ -1,0 +1,2 @@
+# Install all Python dependencies from the Django backend.
+-r backend/requirements.txt

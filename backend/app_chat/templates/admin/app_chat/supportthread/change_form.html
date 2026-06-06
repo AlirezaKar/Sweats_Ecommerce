@@ -1,0 +1,18 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+
+{% block after_related_objects %}
+{{ block.super }}
+{% if original %}
+<fieldset class="module aligned">
+  <h2>{% translate "ارسال پاسخ به کاربر" %}</h2>
+  <div class="form-row">
+    <div>
+      <label for="id_staff_reply">{% translate "پاسخ شما" %}:</label>
+      <textarea name="staff_reply" id="id_staff_reply" rows="4" cols="80" class="vLargeTextField"></textarea>
+      <p class="help">{% translate "پس از ذخیره، این پیام برای کاربر در ویجت پشتیبانی نمایش داده می‌شود." %}</p>
+    </div>
+  </div>
+</fieldset>
+{% endif %}
+{% endblock %}

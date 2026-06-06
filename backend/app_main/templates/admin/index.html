@@ -1,0 +1,23 @@
+{% extends "admin/index.html" %}
+{% load i18n %}
+
+{% block content %}
+{{ block.super }}
+{% if user.is_superuser %}
+<div class="module" id="database-backup-module">
+  <table>
+    <caption>
+      <a href="{% url 'admin:database-backup' %}" class="section">{% translate "پشتیبان‌گیری" %}</a>
+    </caption>
+    <tr class="model-databasebackup">
+      <th scope="row">
+        <a href="{% url 'admin:database-backup' %}">{% translate "پشتیبان پایگاه داده" %}</a>
+      </th>
+      <td>
+        <a href="{% url 'admin:database-backup' %}" class="addlink">{% translate "ایجاد پشتیبان" %}</a>
+      </td>
+    </tr>
+  </table>
+</div>
+{% endif %}
+{% endblock %}

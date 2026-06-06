@@ -1,0 +1,59 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% translate "Home" %}</a>
+  &rsaquo; {% translate "پشتیبان‌گیری پایگاه داده" %}
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <h1>{% translate "پشتیبان‌گیری پایگاه داده" %}</h1>
+  <p>{% translate "فایل‌های پشتیبان در پوشه backup پروژه ذخیره می‌شوند." %}</p>
+
+  <form method="post" class="module aligned">
+    {% csrf_token %}
+    <fieldset class="module aligned">
+      <h2>{% translate "ایجاد پشتیبان جدید" %}</h2>
+      <div class="form-row">
+        <div>
+          <label for="id_name">{% translate "نام فایل (اختیاری)" %}:</label>
+          <input type="text" name="name" id="id_name" maxlength="120" class="vTextField" placeholder="backup_custom.sql">
+          <p class="help">{{ default_name_hint }}</p>
+        </div>
+      </div>
+    </fieldset>
+    <div class="submit-row">
+      <input type="submit" value="{% translate 'ایجاد پشتیبان' %}" class="default">
+    </div>
+  </form>
+
+  <div class="module">
+    <h2>{% translate "پشتیبان‌های موجود" %}</h2>
+    {% if backups %}
+    <table>
+      <thead>
+        <tr>
+          <th>{% translate "نام فایل" %}</th>
+          <th>{% translate "حجم" %}</th>
+          <th>{% translate "تاریخ" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for backup in backups %}
+        <tr>
+          <td><code>{{ backup.filename }}</code></td>
+          <td>{{ backup.size_bytes|filesizeformat }}</td>
+          <td>{{ backup.created_at }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p>{% translate "هنوز پشتیبانی ثبت نشده است." %}</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

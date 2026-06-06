@@ -1,0 +1,84 @@
+
+# Database
+db.sqlite3
+backend/db.sqlite3
+*.sqlite3
+*.sql
+*.dump
+*.pgdump
+
+# Backup / local work
+backup/
+plan/
+!plan/project-structure.md
+
+# Docker (local overrides only)
+docker-compose.override.yml
+
+# --- Django / Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local config
+.env
+.env.*
+!.env.example
+backend/.env
+!backend/.env.example
+frontend/.env.local
+frontend/.env*.local
+local_settings.py
+
+# Django media/static outputs
+media/
+backend/media/
+staticfiles/
+backend/staticfiles/
+
+# --- Python venv ---
+.venv/
+venv/
+env/
+
+# --- Node / Next.js / Frontend build artifacts ---
+node_modules/
+frontend/node_modules/
+
+.next/
+frontend/.next/
+
+out/
+dist/
+build/
+
+frontend/out/
+frontend/dist/
+frontend/build/
+
+coverage/
+frontend/coverage/
+
+# --- OS / editor ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Node/JS logs & caches
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Vercel (optional)
+.vercel/
+
+# Generic logs
+*.log

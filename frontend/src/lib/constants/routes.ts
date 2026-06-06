@@ -1,0 +1,27 @@
+/** Single source of truth for storefront paths */
+export const routes = {
+  home: "/",
+  products: "/products",
+  product: (slug: string) => `/products/${slug}`,
+  blog: "/blog",
+  blogPost: (slug: string) => `/blog/${slug}`,
+  tutorials: "/tutorials",
+  tutorialWatch: (slug: string) => `/tutorials/${slug}/watch`,
+  courses: "/courses",
+  course: (slug: string) => `/courses/${slug}`,
+  courseWatch: (courseSlug: string, episodeSlug: string) =>
+    `/courses/${courseSlug}/watch/${episodeSlug}`,
+  cart: "/cart",
+  wishlist: "/wishlist",
+  checkout: "/checkout",
+  orders: "/orders",
+  wallet: "/wallet",
+  profile: "/profile",
+  profileBackup: "/profile/backup",
+  dashboard: "/dashboard",
+  login: "/auth/login",
+  register: "/auth/register",
+  about: "/about",
+  contact: "/contact",
+  faq: "/faq",
+} as const;

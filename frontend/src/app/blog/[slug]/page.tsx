@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { MediaImage } from "@/components/ui/MediaImage";
 import { notFound } from "next/navigation";
@@ -10,8 +11,39 @@ import { routes } from "@/lib/constants/routes";
 import { fetchBlogPost, fetchBlogPosts } from "@/lib/api/blog";
 import { ApiError } from "@/lib/api/client";
 import { formatBlogDateFull } from "@/lib/utils/formatBlogDate";
+import { buildPageMetadata, truncateDescription } from "@/lib/seo/metadata";
+import { JsonLd } from "@/lib/seo/JsonLd";
+import { articleSchema, breadcrumbSchema } from "@/lib/seo/schemas";
 
 type Props = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+
+  try {
+    const post = await fetchBlogPost(slug);
+    return buildPageMetadata({
+      title: post.title,
+      description: truncateDescription(post.excerpt || post.body.replace(/<[^>]+>/g, " ")),
+      path: routes.blogPost(slug),
+      image: post.thumbnail,
+      type: "article",
+      publishedTime: post.published_at,
+      modifiedTime: post.updated_at,
+      authors: [post.author_name],
+    });
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 404) {
+      return buildPageMetadata({
+        title: "مقاله یافت نشد",
+        description: "این مقاله در وبلاگ شیرینی‌خانه موجود نیست.",
+        path: routes.blogPost(slug),
+        index: false,
+      });
+    }
+    throw err;
+  }
+}
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
@@ -37,7 +69,18 @@ export default async function BlogPostPage({ params }: Props) {
   const date = formatBlogDateFull(post.published_at);
 
   return (
-    <article>
+    <>
+      <JsonLd
+        data={[
+          articleSchema(post),
+          breadcrumbSchema([
+            { name: "خانه", path: routes.home },
+            { name: fa.nav.blog, path: routes.blog },
+            { name: post.title, path: routes.blogPost(slug) },
+          ]),
+        ]}
+      />
+      <article>
       {/* Hero banner — SUPP-FIT style */}
       <div className="relative aspect-[21/9] max-h-[420px] w-full bg-muted sm:aspect-[21/8]">
         {post.thumbnail ? (
@@ -117,6 +160,7 @@ export default async function BlogPostPage({ params }: Props) {
           </section>
         )}
       </div>
-    </article>
+      </article>
+    </>
   );
 }

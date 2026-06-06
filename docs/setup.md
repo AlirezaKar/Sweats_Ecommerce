@@ -61,11 +61,14 @@ npm install
 cd ..
 ```
 
-Optional `frontend/.env.local`:
+Optional `frontend/.env.local` (see also `frontend/.env.example`):
 
 ```env
 NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
+
+Set `NEXT_PUBLIC_SITE_URL` to your public storefront URL in production (canonical links, sitemap, Open Graph).
 
 ### 6. Create admin user
 

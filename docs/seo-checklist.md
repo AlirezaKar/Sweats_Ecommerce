@@ -15,18 +15,18 @@ A practical checklist for improving search engine visibility. Use it before laun
 
 The Sweats storefront is a **Next.js App Router** site (`frontend/src/app/`) with Persian (`fa`) RTL content. Current gaps to address first:
 
-| Priority | Item | Status in repo (audit date) |
-|----------|------|-----------------------------|
-| Critical | Unique `title` + `description` per public page | Only root `layout.tsx` has metadata |
-| Critical | `sitemap.xml` listing products, blog, courses | Not present |
-| Critical | `robots.txt` (allow public, block account/checkout) | Not present |
-| Critical | Canonical URLs on all indexable pages | Not implemented |
-| High | Open Graph + Twitter Card meta tags | Not implemented |
-| High | Structured data (Product, Article, BreadcrumbList) | Not implemented |
-| High | Server-rendered HTML for product/blog/course detail | Partially done (SSR pages exist; verify crawlability) |
-| High | `noindex` on cart, checkout, profile, auth | Not verified |
-| Medium | Image `alt` text on product/media components | Audit per page |
-| Medium | Core Web Vitals (LCP, INP, CLS) | Measure in production |
+| Priority | Item | Status in repo |
+|----------|------|----------------|
+| Critical | Unique `title` + `description` per public page | Implemented (`generateMetadata` / `metadata` on all public routes) |
+| Critical | `sitemap.xml` listing products, blog, courses | Implemented (`frontend/src/app/sitemap.ts`) |
+| Critical | `robots.txt` (allow public, block account/checkout) | Implemented (`frontend/src/app/robots.ts`) |
+| Critical | Canonical URLs on all indexable pages | Implemented via `buildPageMetadata()` |
+| High | Open Graph + Twitter Card meta tags | Implemented |
+| High | Structured data (Product, Article, BreadcrumbList, FAQ, Video) | Implemented (`frontend/src/lib/seo/schemas.ts`) |
+| High | Server-rendered HTML for product/blog/course detail | SSR pages with metadata + JSON-LD |
+| High | `noindex` on cart, checkout, profile, auth | Implemented (route `layout.tsx` files) |
+| Medium | Image `alt` text on product/media components | Product detail uses API `alt_text` when available |
+| Medium | Core Web Vitals (LCP, INP, CLS) | Measure in production after deploy |
 
 ---
 

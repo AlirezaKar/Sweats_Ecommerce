@@ -1,6 +1,16 @@
+import type { Metadata } from "next";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { fa } from "@/lib/i18n/fa";
+import { routes } from "@/lib/constants/routes";
 import { fetchBlogPosts } from "@/lib/api/blog";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: fa.nav.blog,
+  description:
+    "مقالات و نکات کاربردی درباره شیرینی، کیک خانگی، مناسبت‌ها و پذیرایی — وبلاگ شیرینی‌خانه.",
+  path: routes.blog,
+});
 
 export default async function BlogListPage() {
   const posts = await fetchBlogPosts(24).catch(() => []);

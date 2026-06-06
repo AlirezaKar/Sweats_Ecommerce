@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { DIRECTION, LANG } from "@/lib/constants/locale";
-import { fa } from "@/lib/i18n/fa";
 import { vazirmatn } from "@/lib/fonts";
 import { fetchCategories } from "@/lib/api/products";
 import { AuthProvider } from "@/context/AuthContext";
@@ -10,12 +9,12 @@ import { MobileCategoryBar } from "@/components/layout/MobileCategoryBar";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { ScrollToTop } from "@/components/layout/ScrollToTop";
 import { SupportWidget } from "@/components/support/SupportWidget";
+import { JsonLd } from "@/lib/seo/JsonLd";
+import { rootMetadata } from "@/lib/seo/metadata";
+import { organizationSchema } from "@/lib/seo/schemas";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: fa.common.siteName,
-  description: "فروشگاه آنلاین شیرینی و کیک خانگی",
-};
+export const metadata: Metadata = rootMetadata();
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -38,6 +37,7 @@ export default async function RootLayout({
   return (
     <html lang={LANG} dir={DIRECTION} className={`${vazirmatn.variable} h-full antialiased`}>
       <body className={`${vazirmatn.className} flex min-h-full flex-col font-sans`}>
+        <JsonLd data={organizationSchema()} />
         <AuthProvider>
           <CartProvider>
             <SiteHeader categories={categories} />

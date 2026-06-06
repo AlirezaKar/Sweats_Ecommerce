@@ -77,18 +77,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return;
     }
 
+    const authToken = token;
     let cancelled = false;
 
     async function sync() {
       setLoading(true);
       try {
         const guestItems = readGuestCart();
-        if (guestItems.length > 0 && mergedRef.current !== token) {
-          await mergeGuestCart(token, guestCartToMergePayload(guestItems));
+        if (guestItems.length > 0 && mergedRef.current !== authToken) {
+          await mergeGuestCart(authToken, guestCartToMergePayload(guestItems));
           clearGuestCart();
-          mergedRef.current = token;
+          mergedRef.current = authToken;
         }
-        const data = await fetchCart(token);
+        const data = await fetchCart(authToken);
         if (!cancelled) setCart(data);
       } catch {
         if (!cancelled) setCart(emptyCart);

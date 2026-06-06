@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { BlogArticleBody } from "@/components/blog/BlogArticleBody";
 import { MediaImage } from "@/components/ui/MediaImage";
@@ -10,10 +11,40 @@ import { routes } from "@/lib/constants/routes";
 import { formatPrice } from "@/lib/utils/formatPrice";
 import { fetchProduct, fetchRelatedProducts } from "@/lib/api/products";
 import { ApiError } from "@/lib/api/client";
+import { buildPageMetadata, truncateDescription } from "@/lib/seo/metadata";
+import { JsonLd } from "@/lib/seo/JsonLd";
+import { breadcrumbSchema, productSchema } from "@/lib/seo/schemas";
 
 type Props = { params: Promise<{ slug: string }> };
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+
+  try {
+    const product = await fetchProduct(slug);
+    const mainImage =
+      product.images.find((i) => i.is_main)?.url ?? product.images[0]?.url ?? product.main_image;
+
+    return buildPageMetadata({
+      title: product.title,
+      description: truncateDescription(product.description),
+      path: routes.product(slug),
+      image: mainImage,
+    });
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 404) {
+      return buildPageMetadata({
+        title: "محصول یافت نشد",
+        description: "این محصول در فروشگاه شیرینی‌خانه موجود نیست.",
+        path: routes.product(slug),
+        index: false,
+      });
+    }
+    throw err;
+  }
+}
 
 export default async function ProductDetailPage({ params }: Props) {
   const { slug } = await params;
@@ -36,10 +67,25 @@ export default async function ProductDetailPage({ params }: Props) {
 
   const mainImage =
     product.images.find((i) => i.is_main)?.url ?? product.images[0]?.url ?? product.main_image;
+  const mainImageAlt =
+    product.images.find((i) => i.is_main)?.alt_text ??
+    product.images[0]?.alt_text ??
+    product.title;
   const outOfStock = product.stock <= 0;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <>
+      <JsonLd
+        data={[
+          productSchema(product),
+          breadcrumbSchema([
+            { name: "خانه", path: routes.home },
+            { name: fa.nav.shop, path: routes.products },
+            { name: product.title, path: routes.product(slug) },
+          ]),
+        ]}
+      />
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <nav className="mb-6 truncate text-sm text-muted-foreground">
         <Link href={routes.home} className="hover:text-primary">خانه</Link>
         {" / "}
@@ -53,7 +99,7 @@ export default async function ProductDetailPage({ params }: Props) {
         <div className="order-1 lg:order-3 lg:col-span-4">
           <div className="relative aspect-square overflow-hidden rounded-xl bg-muted">
             {mainImage ? (
-              <MediaImage src={mainImage} alt={product.title} fill className="object-cover" priority sizes="(max-width: 1024px) 100vw, 33vw" />
+              <MediaImage src={mainImage} alt={mainImageAlt} fill className="object-cover" priority sizes="(max-width: 1024px) 100vw, 33vw" />
             ) : (
               <div className="flex h-full items-center justify-center text-muted-foreground">
                 بدون تصویر
@@ -126,6 +172,7 @@ export default async function ProductDetailPage({ params }: Props) {
       )}
 
       <ProductComments slug={slug} comments={product.comments} />
-    </div>
+      </div>
+    </>
   );
 }

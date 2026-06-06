@@ -1,11 +1,23 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { faqIntro, faqItems } from "@/content/faq";
 import { fa } from "@/lib/i18n/fa";
 import { routes } from "@/lib/constants/routes";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+import { JsonLd } from "@/lib/seo/JsonLd";
+import { faqPageSchema } from "@/lib/seo/schemas";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: fa.faq.title,
+  description: fa.faq.subtitle,
+  path: routes.faq,
+});
 
 export default function FaqPage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+    <>
+      <JsonLd data={faqPageSchema()} />
+      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="mb-10 text-center">
         <h1 className="text-2xl font-bold text-primary sm:text-3xl">{fa.faq.title}</h1>
         <p className="mt-3 text-muted-foreground">{fa.faq.subtitle}</p>
@@ -47,6 +59,7 @@ export default function FaqPage() {
           {fa.faq.contactUs}
         </Link>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

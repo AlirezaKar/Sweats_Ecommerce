@@ -1,9 +1,38 @@
+import type { Metadata } from "next";
 import { ProductCard } from "@/components/product/ProductCard";
 import { ProductCategorySidebar } from "@/components/product/ProductCategorySidebar";
 import { fa } from "@/lib/i18n/fa";
+import { routes } from "@/lib/constants/routes";
 import { fetchCategories, fetchProducts } from "@/lib/api/products";
+import { buildPageMetadata, truncateDescription } from "@/lib/seo/metadata";
 
 type Props = { searchParams: Promise<{ category?: string }> };
+
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const { category } = await searchParams;
+
+  if (category) {
+    const categories = await fetchCategories().catch(() => []);
+    const activeCategory = categories.find((item) => item.slug === category);
+    if (activeCategory) {
+      return buildPageMetadata({
+        title: activeCategory.name,
+        description:
+          activeCategory.description?.trim() ||
+          `خرید ${activeCategory.name} تازه و خانگی از شیرینی‌خانه با ارسال سریع در تهران.`,
+        path: `${routes.products}?category=${encodeURIComponent(category)}`,
+      });
+    }
+  }
+
+  return buildPageMetadata({
+    title: fa.nav.shop,
+    description: truncateDescription(
+      "فروشگاه آنلاین شیرینی، کیک و دسر — محصولات تازه با قیمت شفاف و ارسال سریع در تهران.",
+    ),
+    path: routes.products,
+  });
+}
 
 export default async function ProductsPage({ searchParams }: Props) {
   const { category } = await searchParams;

@@ -1,8 +1,16 @@
-import Link from "next/link";
+import type { Metadata } from "next";
 import { TutorialClipsCarousel } from "@/components/tutorials/TutorialClipsCarousel";
 import { CoursesPromoLink } from "@/components/courses/CoursesPromoLink";
 import { fa } from "@/lib/i18n/fa";
+import { routes } from "@/lib/constants/routes";
 import { fetchTutorials } from "@/lib/api/tutorials";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: fa.nav.tutorials,
+  description: fa.tutorials.subtitle,
+  path: routes.tutorials,
+});
 
 export default async function TutorialsPage() {
   const clips = await fetchTutorials(12).catch(() => []);

@@ -1,11 +1,23 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { aboutSections } from "@/content/about";
 import { fa } from "@/lib/i18n/fa";
 import { routes } from "@/lib/constants/routes";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+import { JsonLd } from "@/lib/seo/JsonLd";
+import { organizationSchema } from "@/lib/seo/schemas";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: fa.footer.aboutTitle,
+  description: fa.footer.aboutText,
+  path: routes.about,
+});
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+    <>
+      <JsonLd data={organizationSchema()} />
+      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="mb-10 text-center">
         <h1 className="text-2xl font-bold text-primary sm:text-3xl">{fa.footer.aboutTitle}</h1>
         <p className="mt-3 text-muted-foreground">{fa.about.subtitle}</p>
@@ -33,6 +45,7 @@ export default function AboutPage() {
           {fa.nav.contact}
         </Link>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

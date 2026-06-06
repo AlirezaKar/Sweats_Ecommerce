@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { MediaImage } from "@/components/ui/MediaImage";
 import { notFound } from "next/navigation";
@@ -8,8 +9,35 @@ import { routes } from "@/lib/constants/routes";
 import { formatPrice } from "@/lib/utils/formatPrice";
 import { fetchCourse } from "@/lib/api/courses";
 import { ApiError } from "@/lib/api/client";
+import { buildPageMetadata, truncateDescription } from "@/lib/seo/metadata";
+import { JsonLd } from "@/lib/seo/JsonLd";
+import { breadcrumbSchema, courseSchema } from "@/lib/seo/schemas";
 
 type Props = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+
+  try {
+    const course = await fetchCourse(slug);
+    return buildPageMetadata({
+      title: course.title,
+      description: truncateDescription(course.description.replace(/<[^>]+>/g, " ")),
+      path: routes.course(slug),
+      image: course.thumbnail,
+    });
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 404) {
+      return buildPageMetadata({
+        title: "دوره یافت نشد",
+        description: "این دوره در شیرینی‌خانه موجود نیست.",
+        path: routes.course(slug),
+        index: false,
+      });
+    }
+    throw err;
+  }
+}
 
 export default async function CourseDetailPage({ params }: Props) {
   const { slug } = await params;
@@ -27,7 +55,18 @@ export default async function CourseDetailPage({ params }: Props) {
   const hours = Math.max(1, Math.round(course.total_duration_minutes / 60));
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <>
+      <JsonLd
+        data={[
+          courseSchema(course),
+          breadcrumbSchema([
+            { name: "خانه", path: routes.home },
+            { name: fa.nav.courses, path: routes.courses },
+            { name: course.title, path: routes.course(slug) },
+          ]),
+        ]}
+      />
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <nav className="mb-6 text-sm text-muted-foreground">
         <Link href={routes.home} className="hover:text-primary">
           خانه
@@ -125,6 +164,7 @@ export default async function CourseDetailPage({ params }: Props) {
           </div>
         </aside>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

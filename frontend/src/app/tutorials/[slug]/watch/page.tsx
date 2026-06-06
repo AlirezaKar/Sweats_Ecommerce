@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { MediaImage } from "@/components/ui/MediaImage";
 import { notFound } from "next/navigation";
@@ -7,8 +8,35 @@ import { fa } from "@/lib/i18n/fa";
 import { routes } from "@/lib/constants/routes";
 import { fetchTutorial } from "@/lib/api/tutorials";
 import { ApiError } from "@/lib/api/client";
+import { buildPageMetadata, truncateDescription } from "@/lib/seo/metadata";
+import { JsonLd } from "@/lib/seo/JsonLd";
+import { breadcrumbSchema, tutorialVideoSchema } from "@/lib/seo/schemas";
 
 type Props = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+
+  try {
+    const clip = await fetchTutorial(slug);
+    return buildPageMetadata({
+      title: clip.title,
+      description: truncateDescription(clip.description),
+      path: routes.tutorialWatch(slug),
+      image: clip.thumbnail,
+    });
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 404) {
+      return buildPageMetadata({
+        title: "آموزش یافت نشد",
+        description: "این ویدیوی آموزشی در شیرینی‌خانه موجود نیست.",
+        path: routes.tutorialWatch(slug),
+        index: false,
+      });
+    }
+    throw err;
+  }
+}
 
 export default async function TutorialWatchPage({ params }: Props) {
   const { slug } = await params;
@@ -22,7 +50,17 @@ export default async function TutorialWatchPage({ params }: Props) {
   }
 
   return (
-    <article>
+    <>
+      <JsonLd
+        data={[
+          tutorialVideoSchema(clip),
+          breadcrumbSchema([
+            { name: fa.nav.tutorials, path: routes.tutorials },
+            { name: clip.title, path: routes.tutorialWatch(slug) },
+          ]),
+        ]}
+      />
+      <article>
       <div className="relative aspect-[21/9] max-h-[320px] w-full bg-muted sm:max-h-[380px]">
         {clip.thumbnail ? (
           <MediaImage
@@ -64,6 +102,7 @@ export default async function TutorialWatchPage({ params }: Props) {
           ← {fa.tutorials.backToClips}
         </Link>
       </div>
-    </article>
+      </article>
+    </>
   );
 }
